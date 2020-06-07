@@ -51,7 +51,8 @@
           var index = i;
         }
         // create a new div element
-        var newDiv = document.createElement("div");
+        var flashcard = document.createElement("div");
+        var flashcardInner = document.createElement("div");
         var front = document.createElement("div");
         var back = document.createElement("div");
         var characterDiv = document.createElement("div");
@@ -71,7 +72,8 @@
         // and give it some content
         // var newContent = document.createTextNode("The contents of this flashcard:");
 
-        newDiv.setAttribute("class", "flashcard");
+        flashcard.setAttribute("class", "flashcard");
+        flashcardInner.setAttribute("class", "flashcard-inner");
         front.setAttribute("class", "front");
         back.setAttribute("class", "back");
         characterDiv.setAttribute("class", "character");
@@ -88,14 +90,16 @@
         }
 
         // add the text node to the newly created div
-        // newDiv.appendChild(newContent);
+        // flashcard.appendChild(newContent);
 
         // add the newly created element and its content into the DOM
         var currentDiv = document.getElementById("flashcards");
-        currentDiv.appendChild(newDiv);
-        newDiv.appendChild(front);
-        newDiv.appendChild(back);
-        // If language is Chinese, then front should contain character, and the back the rest. Else, show definition and on the back the rest.
+        currentDiv.appendChild(flashcard);
+        flashcard.appendChild(flashcardInner);
+        flashcardInner.appendChild(front);
+        flashcardInner.appendChild(back);
+        // If language is Chinese, then front should contain character, and the back the rest.
+        // If language is English, show definition and on the back the rest.
         if (language === "Chinese") {
           front.appendChild(characterDiv);
           back.appendChild(pinyinDiv);
@@ -186,7 +190,7 @@
         var hide = function (elem) {
           elem.style.visibility = "hidden";
         };
-        var toggle = function (elem) {
+        var toggleVisibility = function (elem) {
           // If the element is visible, hide it
           if (window.getComputedStyle(elem).visibility === "visible") {
             hide(elem);
@@ -195,6 +199,16 @@
 
           // Otherwise, show it
           show(elem);
+        };
+        var flip = function (elem) {
+          // If the element has the class flip, remove class flip
+          if (elem.classList.contains("flip")) {
+            elem.classList.remove("flip");
+            return;
+          }
+
+          // Otherwise, add class flip
+          elem.classList.add("flip");
         };
         document.addEventListener("click", function (event) {
           if (!event.target.classList.contains("sound")) {
@@ -219,11 +233,15 @@
         document.addEventListener(
           "click",
           function (event) {
+            // console.log(event);
             // Make sure clicked element is our toggle
-            if (!event.target.classList.contains("flashcard")) {
+            if (!event.target.classList.contains("flashcard-inner")) {
               return;
             }
+            flip(event.target.parentNode);
+
             console.log(event);
+
             // Prevent default link behavior
             event.preventDefault();
 
@@ -234,13 +252,16 @@
             var definitionNode = null;
 
             for (var i = 0; i < event.target.childNodes.length; i++) {
+              console.log("for loop is running");
               if (event.target.childNodes[i].className == "front") {
                 frontNode = event.target.childNodes[i];
-                toggle(frontNode);
+                console.log(frontNode);
+                toggleVisibility(frontNode);
               }
               if (event.target.childNodes[i].className == "back") {
                 backNode = event.target.childNodes[i];
-                toggle(backNode);
+                console.log(backNode);
+                toggleVisibility(backNode);
               }
               if (event.target.childNodes[i].className == "character") {
                 characterNode = event.target.childNodes[i];
@@ -506,20 +527,27 @@
 
       .flashcard {
         text-align: center;
-        padding: 60px 40px;
-        background-color: #88ff8c;
+
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
         position: relative;
-        transition-duration: 0.6s;
-        transition-timing-function: ease-in-out;
+      }
+      .flashcard-inner {
+        background-color: #88ff8c;
+        width: 100%;
+        height: 100%;
+        padding: 60px 40px;
+        transition: transform 0.6s;
         transform-style: preserve-3d;
       }
 
       .flashcard:hover {
         cursor: pointer;
+      }
+      .flashcard.flip .flashcard-inner {
+        transform: rotateY(180deg);
       }
 
       .character {
@@ -557,6 +585,14 @@
         font-family: "Josefin Sans", sans-serif;
         font-weight: bold;
       }
+      .front,
+      .back {
+        /* position: absolute; */
+        /* width: 100%; */
+        /* height: 100%; */
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
 
       #flashcards .front {
         visibility: visible;
@@ -572,31 +608,8 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        transform: rotateY(180deg);
       }
-
-      /* #flashcards.english .character {
-        visibility: hidden;
-      }
-
-      #flashcards.english .pinyin {
-        visibility: hidden;
-      }
-
-      #flashcards.english .definition {
-        visibility: visible;
-      }
-
-      #flashcards.chinese .character {
-        visibility: visible;
-      }
-
-      #flashcards.chinese .pinyin {
-        visibility: hidden;
-      }
-
-      #flashcards.chinese .definition {
-        visibility: hidden;
-      } */
 
       .cloud {
         visibility: hidden;
