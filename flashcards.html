@@ -73,9 +73,9 @@
         // var newContent = document.createTextNode("The contents of this flashcard:");
 
         flashcard.setAttribute("class", "flashcard");
-        flashcardInner.setAttribute("class", "flashcard-inner");
-        front.setAttribute("class", "front");
-        back.setAttribute("class", "back");
+        flashcardInner.setAttribute("class", "flashcard-inner flip-trigger");
+        front.setAttribute("class", "front flip-trigger");
+        back.setAttribute("class", "back flip-trigger");
         characterDiv.setAttribute("class", "character");
         pinyinDiv.setAttribute("class", "pinyin");
         definitionDiv.setAttribute("class", "definition");
@@ -233,73 +233,17 @@
         document.addEventListener(
           "click",
           function (event) {
-            // console.log(event);
+            console.log(event.target.classList);
             // Make sure clicked element is our toggle
-            if (!event.target.classList.contains("flashcard-inner")) {
+            if (!event.target.classList.contains("flip-trigger")) {
               return;
             }
-            flip(event.target.parentNode);
+            flip(event.target.closest(".flashcard"));
 
-            console.log(event);
-
-            // Prevent default link behavior
-            event.preventDefault();
+            // event.preventDefault();
 
             // var pinyinNode = event.target.childNodes[1];
             // var definitionNode = event.target.childNodes[2];
-            var characterNode = null;
-            var pinyinNode = null;
-            var definitionNode = null;
-
-            for (var i = 0; i < event.target.childNodes.length; i++) {
-              console.log("for loop is running");
-              if (event.target.childNodes[i].className == "front") {
-                frontNode = event.target.childNodes[i];
-                console.log(frontNode);
-                toggleVisibility(frontNode);
-              }
-              if (event.target.childNodes[i].className == "back") {
-                backNode = event.target.childNodes[i];
-                console.log(backNode);
-                toggleVisibility(backNode);
-              }
-              if (event.target.childNodes[i].className == "character") {
-                characterNode = event.target.childNodes[i];
-              }
-              if (event.target.childNodes[i].className == "pinyin") {
-                pinyinNode = event.target.childNodes[i];
-              }
-              if (event.target.childNodes[i].className == "definition") {
-                definitionNode = event.target.childNodes[i];
-              }
-              if (event.target.childNodes[i].className == "sound") {
-                soundNode = event.target.childNodes[i];
-              }
-              if (event.target.childNodes[i].className == "mdbg") {
-                mdbgNode = event.target.childNodes[i];
-              }
-            }
-
-            // Get the content
-            // var content = document.querySelector(event.target.hash);
-            // if (!content) return;
-            if (!pinyinNode) return;
-            if (!definitionNode) return;
-
-            // Toggle the content
-            // toggle(content);
-            // if (language === "Chinese") {
-            //   toggle(pinyinNode);
-            //   toggle(definitionNode);
-            //   toggle(soundNode);
-            //   toggle(mdbgNode);
-            // }
-            // if (language === "English") {
-            //   toggle(characterNode);
-            //   toggle(pinyinNode);
-            //   toggle(soundNode);
-            //   toggle(mdbgNode);
-            // }
           },
           false
         );
@@ -549,6 +493,37 @@
       .flashcard.flip .flashcard-inner {
         transform: rotateY(180deg);
       }
+      .flashcard .front {
+        visibility: visible;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .flashcard .back {
+        visibility: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        transform: rotateY(180deg);
+      }
+
+      .flashcard.flip .front {
+        visibility: hidden;
+      }
+      .flashcard.flip .back {
+        visibility: visible;
+      }
+      .front,
+      .back {
+        /* position: absolute; */
+        /* width: 100%; */
+        /* height: 100%; */
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
 
       .character {
         font-size: 60px;
@@ -584,31 +559,6 @@
         content: "mdbg";
         font-family: "Josefin Sans", sans-serif;
         font-weight: bold;
-      }
-      .front,
-      .back {
-        /* position: absolute; */
-        /* width: 100%; */
-        /* height: 100%; */
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-      }
-
-      #flashcards .front {
-        visibility: visible;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-      }
-
-      #flashcards .back {
-        visibility: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        transform: rotateY(180deg);
       }
 
       .cloud {
