@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- so that's why that's always in there! utf-8 otherwise no chinese characters -->
+    <meta charset="utf-8">
+    <!-- aha my media queries won't work without width=device-width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div class="intro">
+        <h1>HSK2</h1>
+        <div class="intro-buttons">
+            <div class="button random-button">Random 10</div>
+            <div class="button all-button">Show all</div>
+            <div class="button from-to-button">
+                <span class="toggle-language-button">Flip Language</span>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" language="javascript" src="hsk2.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+    <div id="flashcards" class="flashcards">
+    </div>
+    <!-- <div class="cloud">
+        <p>Test text to see if cloudlet with hold this text!
+            <span class="cloudlet one"></span>
+            <span class="cloudlet two"></span>
+            <span class="cloudlet three"></span>
+            <span class="cloudlet four"></span>
+        </p>
+    </div> -->
+    <script type="text/javascript">
+    let language = 'Chinese';
+    let flashcardsAll = document.getElementById("flashcards");
+    // retrieve all the flashcards on first load
+    for (i = 0; i < HSK2Object.hsk2.length; i++) {
+        addElement(language);
+    }
+
+    function insertAfter(el, referenceNode) {
+        referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
+    }
+
+    function addElement(language, optionalList) {
+        if (optionalList) {
+            var index = optionalList[i];
+        } else {
+            var index = i;
+        }
+        // create a new div element
+        var newDiv = document.createElement("div");
+        var characterDiv = document.createElement("div");
+        var pinyinDiv = document.createElement("div");
+        var definitionDiv = document.createElement("div");
+        var soundDiv = document.createElement("div");
+        var mdbgDiv = document.createElement("div");
+        if (HSK2Object.hsk2[index].mnemonic) {
+            // console.log('there is a mnemonic in ' + HSK2Object.hsk2[i].definition);
+            var mnemonicDiv = document.createElement("div");
+            var mnemonicPar = document.createElement("p");
+            var mnemonicCloudletOne = document.createElement("span");
+            var mnemonicCloudletTwo = document.createElement("span");
+            var mnemonicCloudletThree = document.createElement("span");
+            var mnemonicCloudletFour = document.createElement("span");
+        }
+        // and give it some content 
+        // var newContent = document.createTextNode("The contents of this flashcard:");			  
+
+        newDiv.setAttribute("class", "flashcard");
+        characterDiv.setAttribute("class", "character");
+        pinyinDiv.setAttribute("class", "pinyin");
+        definitionDiv.setAttribute("class", "definition");
+        soundDiv.setAttribute("class", "sound");
+        mdbgDiv.setAttribute("class", "mdbg");
+        if (HSK2Object.hsk2[index].mnemonic) {
+            mnemonicDiv.setAttribute("class", "cloud");
+            mnemonicCloudletOne.setAttribute("class", "cloudlet one");
+            mnemonicCloudletTwo.setAttribute("class", "cloudlet two");
+            mnemonicCloudletThree.setAttribute("class", "cloudlet three");
+            mnemonicCloudletFour.setAttribute("class", "cloudlet four");
+        }
+
+        // add the text node to the newly created div
+        // newDiv.appendChild(newContent);
+
+        // add the newly created element and its content into the DOM 
+        var currentDiv = document.getElementById("flashcards");
+        currentDiv.appendChild(newDiv);
+        newDiv.appendChild(characterDiv);
+        newDiv.appendChild(pinyinDiv);
+        newDiv.appendChild(definitionDiv);
+        newDiv.appendChild(soundDiv);
+        newDiv.appendChild(mdbgDiv);
+        if (HSK2Object.hsk2[index].mnemonic) {
+            newDiv.appendChild(mnemonicDiv);
+            mnemonicDiv.appendChild(mnemonicPar);
+            mnemonicDiv.appendChild(mnemonicCloudletOne);
+            mnemonicDiv.appendChild(mnemonicCloudletTwo);
+            mnemonicDiv.appendChild(mnemonicCloudletThree)
+            mnemonicDiv.appendChild(mnemonicCloudletFour);
+        }
+        // var mdbgTextNode = document.createTextNode("https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb="+HSK2Object.hsk2[index].character);
+        var characterTextNode = document.createTextNode(HSK2Object.hsk2[index].character);
+        var pinyinTextNode = document.createTextNode(HSK2Object.hsk2[index].pinyin);
+        var definitionTextNode = document.createTextNode(HSK2Object.hsk2[index].definition);
+        soundDiv.setAttribute("data-sound", 'https://translate.google.com/#view=home&op=translate&sl=zh-CN&tl=en&text=' + (HSK2Object.hsk2[index].character));
+        mdbgDiv.setAttribute("data-mdbg", "https://www.mdbg.net/chinese/dictionary?page=worddict&wdrst=0&wdqb=" + (HSK2Object.hsk2[index].character));
+        if (HSK2Object.hsk2[index].mnemonic) {
+            var mnemonicTextNode = document.createTextNode(HSK2Object.hsk2[index].mnemonic);
+        }
+        // mdbgDiv.appendChild(mdbgTextNode);
+        characterDiv.appendChild(characterTextNode);
+        pinyinDiv.appendChild(pinyinTextNode);
+        definitionDiv.appendChild(definitionTextNode);
+        if (HSK2Object.hsk2[index].mnemonic) {
+            mnemonicPar.appendChild(mnemonicTextNode);
+        }
+
+        // soundDiv.appendChild(soundLinkNode);
+
+        if (language === 'English') {
+            var characterDiv = document.getElementsByClassName("character").item(i);
+            var definitionDiv = document.getElementsByClassName("definition").item(i);
+            // console.log(characterDiv);
+            // console.log(definitionDiv.item(0));
+            // console.log(characterDiv.item(0));
+            // insert pinyin after definition
+            insertAfter(pinyinDiv, definitionDiv);
+            // insert character after pinyin
+            insertAfter(characterDiv, pinyinDiv);
+
+            document.getElementById("flashcards").classList.add('english');
+            document.getElementById("flashcards").classList.remove('chinese');
+
+        } else if (language === 'Chinese') {
+            insertAfter(definitionDiv, characterDiv);
+            document.getElementById("flashcards").classList.add('chinese');
+            document.getElementById("flashcards").classList.remove('english');
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // alert(HSK2Object.hsk2[0].pinyin);
+        // document.getElementById("character").innerHTML = HSK2Object.hsk2[0].character;
+
+        // document.getElementById("pinyin").innerHTML = HSK2Object.hsk2[0].pinyin;
+        // document.getElementById("definition").innerHTML = HSK2Object.hsk2[0].definition;
+        // for (i = 0; i < HSK2Object.hsk2.length; i++) {
+        //     addElement();
+        // }
+        var show = function(elem) {
+            elem.style.visibility = 'visible';
+        };
+
+        var hide = function(elem) {
+            elem.style.visibility = 'hidden';
+        };
+        var toggle = function(elem) {
+
+            // If the element is visible, hide it
+            if (window.getComputedStyle(elem).visibility === 'visible') {
+                hide(elem);
+                return;
+            }
+
+            // Otherwise, show it
+            show(elem);
+
+        };
+        document.addEventListener('click', function(event) {
+            if (!event.target.classList.contains('sound')) {
+                return;
+            }
+            window.open(event.target.dataset.sound, "Google Translate", "menubar=1,resizable=1,width=350,height=350");
+        });
+        document.addEventListener('click', function(event) {
+            if (!event.target.classList.contains('mdbg')) {
+                return;
+            }
+            window.open(event.target.dataset.mdbg, "MDBG", "menubar=1,resizable=1,width=450,height=600");
+        });
+        document.addEventListener('click', function(event) {
+
+            // Make sure clicked element is our toggle
+            if (!event.target.classList.contains('flashcard')) {
+                return;
+            }
+
+            // Prevent default link behavior
+            event.preventDefault();
+
+            // var pinyinNode = event.target.childNodes[1];
+            // var definitionNode = event.target.childNodes[2];
+            var characterNode = null;
+            var pinyinNode = null;
+            var definitionNode = null;
+
+            for (var i = 0; i < event.target.childNodes.length; i++) {
+                if (event.target.childNodes[i].className == "character") {
+                    characterNode = event.target.childNodes[i];
+                }
+                if (event.target.childNodes[i].className == "pinyin") {
+                    pinyinNode = event.target.childNodes[i];
+                }
+                if (event.target.childNodes[i].className == "definition") {
+                    definitionNode = event.target.childNodes[i];
+                }
+                if (event.target.childNodes[i].className == "sound") {
+                    soundNode = event.target.childNodes[i];
+                }
+                if (event.target.childNodes[i].className == "mdbg") {
+                    mdbgNode = event.target.childNodes[i];
+                }
+            }
+
+            // Get the content
+            // var content = document.querySelector(event.target.hash);
+            // if (!content) return;
+            if (!pinyinNode) return;
+            if (!definitionNode) return;
+
+            // Toggle the content
+            // toggle(content);
+            if (language === "Chinese") {
+                toggle(pinyinNode);
+                toggle(definitionNode);
+                toggle(soundNode);
+                toggle(mdbgNode);
+            }
+            if (language === "English") {
+                toggle(characterNode);
+                toggle(pinyinNode);
+                toggle(soundNode);
+                toggle(mdbgNode);
+            }
+        }, false);
+        document.addEventListener('click', function(event) {
+
+            // Make sure clicked element is our toggle
+            if (!event.target.classList.contains('random-button')) {
+                return;
+            }
+            // clear the flashcards
+            var flashcardsAll = document.getElementById("flashcards");
+            flashcardsAll.innerHTML = '';
+            var listRandom10 = [];
+            for (i = 0; i < 10; i++) {
+                listRandom10.push((Math.floor(Math.random() * HSK2Object.hsk2.length)));
+            }
+            for (i = 0; i < listRandom10.length; i++) {
+                addElement(language, listRandom10);
+                // First the Random Button had it's own function to generate cards. But I saw it was reusing a lot of the code off addElement(language). So I added the parameter optionalList to addElement().
+            }
+        }, false);
+        document.addEventListener('click', function(event) {
+
+            // Make sure clicked element is our toggle
+            if (!event.target.classList.contains('all-button')) {
+                return;
+            }
+            // clear the flashcards
+            var flashcardsAll = document.getElementById("flashcards");
+            flashcardsAll.innerHTML = '';
+            // retrieve all the flashcards
+            for (i = 0; i < HSK2Object.hsk2.length; i++) {
+                addElement(language);
+            }
+
+        }, false);
+        document.addEventListener('click', function(event) {
+
+            // Make sure clicked element is our toggle
+            if (!event.target.classList.contains('toggle-language-button')) {
+                return;
+            }
+
+            // Prevent default link behavior
+            event.preventDefault();
+
+            var toggleLanguageButton = document.getElementsByClassName('toggle-language-button');
+            if (language === 'English') {
+                language = 'Chinese';
+                // clear the flashcards
+                let flashcardsAll = document.getElementById("flashcards");
+                flashcardsAll.innerHTML = '';
+                // retrieve all the flashcards
+                for (i = 0; i < HSK2Object.hsk2.length; i++) {
+                    addElement(language);
+                }
+
+            } else if (language === 'Chinese') {
+                language = 'English';
+
+                // clear the flashcards
+                var flashcardsAll = document.getElementById("flashcards");
+                flashcardsAll.innerHTML = '';
+                // retrieve all the flashcards
+                for (i = 0; i < HSK2Object.hsk2.length; i++) {
+                    addElement(language);
+                }
+            }
+            console.log(language);
+        }, false);
+        document.addEventListener('mouseover', function(event) {
+            if (!event.target.classList.contains('character')) {
+                return;
+            }
+            var character = event.target;
+            flashcardChildren = character.parentNode.childNodes;
+            for (var i = 0; i < flashcardChildren.length; i++) {
+                if (flashcardChildren[i].className == "cloud") {
+                    show(flashcardChildren[i]);
+                }
+            }
+        }, false);
+        document.addEventListener("mouseout", function(event) {
+            // highlight the mouseout target
+            if (!event.target.classList.contains('character')) {
+                return;
+            }
+            var character = event.target;
+            flashcardChildren = character.parentNode.childNodes;
+            for (var i = 0; i < flashcardChildren.length; i++) {
+                if (flashcardChildren[i].className == "cloud") {
+                    hide(flashcardChildren[i]);
+                }
+            }
+        }, false);
+        document.cookie = "wordsLearned=对,房间; expires=Thu, 18 Dec 2020 12:00:00 UTC";
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function checkCookie() {
+            var username = getCookie("username");
+            if (username != "") {
+                alert("Welcome again " + username);
+            } else {
+                username = prompt("Please enter your name:", "");
+                if (username != "" && username != null) {
+                    setCookie("username", username, 365);
+                }
+            }
+        }
+        console.log(getCookie('wordsLearned'));
+    });
+    </script>
+    <style>
+    body,
+    p,
+    div,
+    span,
+    ul,
+    li {
+        box-sizing: border-box;
+    }
+
+    .intro {
+        border: 10px solid #88ff8c;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 90%, rgba(136, 255, 140, 1) 100%);
+        /*background-image: linear-gradient(to right bottom, #ffffff, #88ff8c);*/
+        background-size: 20px 20px;
+        padding: 50px 10px;
+    }
+
+    .intro-buttons {
+        padding-left: 10px;
+        padding-right: 10px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    h1 {
+        margin-top: 0;
+        flex-grow: 0;
+        flex-shrink: 1;
+        font-family: 'Josefin Sans', sans-serif;
+    }
+
+    .button {
+        cursor: pointer;
+        font-family: 'Josefin Sans', sans-serif;
+        border: 3px solid #88ff8c;
+        padding: 5px 10px 3px;
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+        flex: 1 1 100%;
+        margin-bottom: 10px;
+    }
+
+    .button:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .button:hover {
+        border: 3px solid black;
+    }
+
+    .button:active {
+        border: 3px solid #88ff8c;
+    }
+
+    .flashcards {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-gap: 10px;
+    }
+
+    .flashcard {
+        text-align: center;
+        padding: 60px 40px;
+        background-color: #88ff8c;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        position: relative;
+
+    }
+
+    .flashcard:hover {
+        cursor: pointer;
+    }
+
+    .character {
+        font-size: 60px;
+        flex-grow: 1;
+    }
+
+    .pinyin {
+        margin-top: 20px;
+        font-size: 25px;
+        font-family: garamond;
+    }
+
+    .definition {
+
+        font-size: 25px;
+        font-family: garamond;
+    }
+
+    .sound {
+        margin-top: 20px;
+        width: 20px;
+        height: 20px;
+        content: url('sound-2.svg');
+        position: relative;
+        visibility: hidden;
+    }
+
+    .mdbg {
+        margin-top: 12px;
+        visibility: hidden;
+    }
+
+    .mdbg:before {
+        content: "mdbg";
+        font-family: 'Josefin Sans', sans-serif;
+        font-weight: bold;
+    }
+
+    #flashcards.english .character {
+        visibility: hidden;
+    }
+
+    #flashcards.english .pinyin {
+        visibility: hidden;
+    }
+
+    #flashcards.english .definition {
+        visibility: visible;
+    }
+
+    #flashcards.chinese .character {
+        visibility: visible;
+    }
+
+    #flashcards.chinese .pinyin {
+        visibility: hidden;
+    }
+
+    #flashcards.chinese .definition {
+        visibility: hidden;
+    }
+
+    .cloud {
+        visibility: hidden;
+        position: absolute;
+        top: -150px;
+        right: 0;
+    }
+
+    .cloud p {
+        padding: 25px;
+        position: relative;
+        border-left: 11px solid #bbbbbb;
+        border-bottom: 11px solid #cccccc;
+        border-right: 11px solid #dddddd;
+        border-radius: 100px;
+        width: 250px;
+        z-index: 1;
+        background-color: white;
+    }
+
+    .cloudlet {
+        box-sizing: border-box;
+        position: absolute;
+        background-color: white;
+        border-radius: 100px;
+    }
+
+    .cloudlet.one {
+        width: 100px;
+        height: 100px;
+        top: -31px;
+        right: 30px;
+        z-index: 0;
+        position: absolute;
+        background-color: white;
+        border-radius: 100px;
+        border-top: 11px solid #f4f4f4;
+        border-right: 11px solid #e6e6e6;
+    }
+
+    .cloudlet.two {
+        width: 80px;
+        height: 80px;
+        top: -20px;
+        right: 120px;
+        z-index: 0;
+        border-top: 11px solid #eeeeee;
+        border-left: 11px solid #dddddd;
+
+    }
+
+    .cloudlet.three {
+        width: 35px;
+        height: 35px;
+        bottom: -25px;
+        left: 50px;
+        border-left: 11px solid #b4b4b4;
+        border-bottom: 11px solid #c9c6c6;
+        border-right: 11px solid #e8e8e8;
+        transform: rotate(30deg);
+    }
+
+    .cloudlet.four {
+        width: 25px;
+        height: 25px;
+        bottom: -35px;
+        left: 17px;
+        border-left: 6px solid #b4b4b4;
+        border-bottom: 6px solid #c9c6c6;
+        border-right: 6px solid #e8e8e8;
+        transform: rotate(45deg);
+    }
+
+    @media screen and (min-width: 666px) {
+        .flashcards {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .button {
+            margin-right: 10px;
+            flex: 0 0 auto;
+            margin-bottom: 0;
+        }
+
+        .button:last-of-type {
+            margin-right: 0;
+        }
+    }
+
+    @media screen and (min-width: 1024px) {
+        .flashcards {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+    }
+
+    @media screen and (min-width: 1400px) {
+        .flashcards {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+    }
+    </style>
+</body>
+
+</html>
