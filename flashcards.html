@@ -55,6 +55,7 @@
         var flashcardInner = document.createElement("div");
         var front = document.createElement("div");
         var back = document.createElement("div");
+        var flip = document.createElement("button");
         var characterDiv = document.createElement("div");
         var pinyinDiv = document.createElement("div");
         var definitionDiv = document.createElement("div");
@@ -62,6 +63,7 @@
         var mdbgDiv = document.createElement("div");
         if (HSK2Object.hsk2[index].mnemonic) {
           // console.log('there is a mnemonic in ' + HSK2Object.hsk2[i].definition);
+          var tip = document.createElement("button");
           var mnemonicDiv = document.createElement("div");
           var mnemonicPar = document.createElement("p");
           var mnemonicCloudletOne = document.createElement("span");
@@ -73,15 +75,19 @@
         // var newContent = document.createTextNode("The contents of this flashcard:");
 
         flashcard.setAttribute("class", "flashcard");
-        flashcardInner.setAttribute("class", "flashcard-inner flip-trigger");
-        front.setAttribute("class", "front flip-trigger");
-        back.setAttribute("class", "back flip-trigger");
+        flashcardInner.setAttribute("class", "flashcard-inner");
+        front.setAttribute("class", "front");
+        back.setAttribute("class", "back");
         characterDiv.setAttribute("class", "character");
         pinyinDiv.setAttribute("class", "pinyin");
         definitionDiv.setAttribute("class", "definition");
         soundDiv.setAttribute("class", "sound");
         mdbgDiv.setAttribute("class", "mdbg");
+        flip.setAttribute("class", "flip");
+        flip.textContent = "flip";
         if (HSK2Object.hsk2[index].mnemonic) {
+          tip.setAttribute("class", "tip");
+          tip.textContent = "tip";
           mnemonicDiv.setAttribute("class", "cloud");
           mnemonicCloudletOne.setAttribute("class", "cloudlet one");
           mnemonicCloudletTwo.setAttribute("class", "cloudlet two");
@@ -89,7 +95,7 @@
           mnemonicCloudletFour.setAttribute("class", "cloudlet four");
         }
 
-        // add the text node to the newly created div
+        // add the node to the newly created div
         // flashcard.appendChild(newContent);
 
         // add the newly created element and its content into the DOM
@@ -102,11 +108,15 @@
         // If language is English, show definition and on the back the rest.
         if (language === "Chinese") {
           front.appendChild(characterDiv);
+          front.appendChild(flip);
+          var flip2 = flip.cloneNode(flashcard);
+          back.appendChild(flip2);
           back.appendChild(pinyinDiv);
           back.appendChild(definitionDiv);
           back.appendChild(soundDiv);
           back.appendChild(mdbgDiv);
           if (HSK2Object.hsk2[index].mnemonic) {
+            front.appendChild(tip);
             front.appendChild(mnemonicDiv);
             mnemonicDiv.appendChild(mnemonicPar);
             mnemonicDiv.appendChild(mnemonicCloudletOne);
@@ -118,9 +128,13 @@
           back.appendChild(characterDiv);
           back.appendChild(pinyinDiv);
           front.appendChild(definitionDiv);
+          back.appendChild(flip);
+          var flip2 = flip.cloneNode(true);
+          front.appendChild(flip2);
           back.appendChild(soundDiv);
           back.appendChild(mdbgDiv);
           if (HSK2Object.hsk2[index].mnemonic) {
+            back.appendChild(tip);
             back.appendChild(mnemonicDiv);
             mnemonicDiv.appendChild(mnemonicPar);
             mnemonicDiv.appendChild(mnemonicCloudletOne);
@@ -200,15 +214,25 @@
           // Otherwise, show it
           show(elem);
         };
-        var flip = function (elem) {
-          // If the element has the class flip, remove class flip
-          if (elem.classList.contains("flip")) {
-            elem.classList.remove("flip");
+        // var flip = function (elem) {
+        //   // If the element has the class flip, remove class flip
+        //   if (elem.classList.contains("flip")) {
+        //     elem.classList.remove("flip");
+        //     return;
+        //   }
+
+        //   // Otherwise, add class flip
+        //   elem.classList.add("flip");
+        // };
+        var toggleActive = function (elem) {
+          // If the element has the class active, remove class active
+          if (elem.classList.contains("active")) {
+            elem.classList.remove("active");
             return;
           }
 
-          // Otherwise, add class flip
-          elem.classList.add("flip");
+          // Otherwise, add class active
+          elem.classList.add("active");
         };
         document.addEventListener("click", function (event) {
           if (!event.target.classList.contains("sound")) {
@@ -230,23 +254,7 @@
             "menubar=1,resizable=1,width=450,height=600"
           );
         });
-        document.addEventListener(
-          "click",
-          function (event) {
-            console.log(event.target.classList);
-            // Make sure clicked element is our toggle
-            if (!event.target.classList.contains("flip-trigger")) {
-              return;
-            }
-            flip(event.target.closest(".flashcard"));
 
-            // event.preventDefault();
-
-            // var pinyinNode = event.target.childNodes[1];
-            // var definitionNode = event.target.childNodes[2];
-          },
-          false
-        );
         document.addEventListener(
           "click",
           function (event) {
@@ -326,35 +334,25 @@
           false
         );
         document.addEventListener(
-          "mouseover",
+          "click",
           function (event) {
-            if (!event.target.classList.contains("character")) {
+            if (!event.target.classList.contains("tip")) {
               return;
             }
-            var character = event.target;
-            flashcardChildren = character.parentNode.childNodes;
-            for (var i = 0; i < flashcardChildren.length; i++) {
-              if (flashcardChildren[i].className == "cloud") {
-                show(flashcardChildren[i]);
-              }
-            }
+            currentCard = event.target.closest(".flashcard");
+            currentCloud = currentCard.querySelector(".cloud");
+            toggleActive(currentCloud);
           },
           false
         );
         document.addEventListener(
-          "mouseout",
+          "click",
           function (event) {
-            // highlight the mouseout target
-            if (!event.target.classList.contains("character")) {
+            if (!event.target.classList.contains("flip")) {
               return;
             }
-            var character = event.target;
-            flashcardChildren = character.parentNode.childNodes;
-            for (var i = 0; i < flashcardChildren.length; i++) {
-              if (flashcardChildren[i].className == "cloud") {
-                hide(flashcardChildren[i]);
-              }
-            }
+            currentCard = event.target.closest(".flashcard");
+            toggleActive(currentCard);
           },
           false
         );
@@ -471,7 +469,6 @@
 
       .flashcard {
         text-align: center;
-
         display: flex;
         justify-content: center;
         align-items: center;
@@ -482,15 +479,17 @@
         background-color: #88ff8c;
         width: 100%;
         height: 100%;
-        padding: 60px 40px;
+        /* padding: 60px 40px; */
         transition: transform 0.6s;
         transform-style: preserve-3d;
+        display: flex;
+        flex-direction: column;
       }
 
       .flashcard:hover {
         cursor: pointer;
       }
-      .flashcard.flip .flashcard-inner {
+      .flashcard.active .flashcard-inner {
         transform: rotateY(180deg);
       }
       .flashcard .front {
@@ -499,6 +498,9 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        padding-top: 40px;
+        padding-left: 40px;
+        padding-right: 40px;
       }
 
       .flashcard .back {
@@ -508,12 +510,16 @@
         align-items: center;
         flex-direction: column;
         transform: rotateY(180deg);
+        flex-grow: 1;
+        padding-bottom: 40px;
+        padding-left: 40px;
+        padding-right: 40px;
       }
 
-      .flashcard.flip .front {
+      .flashcard.active .front {
         visibility: hidden;
       }
-      .flashcard.flip .back {
+      .flashcard.active .back {
         visibility: visible;
       }
       .front,
@@ -566,6 +572,10 @@
         position: absolute;
         top: -150px;
         right: 0;
+      }
+
+      .cloud.active {
+        visibility: visible;
       }
 
       .cloud p {
@@ -630,6 +640,34 @@
         border-bottom: 6px solid #c9c6c6;
         border-right: 6px solid #e8e8e8;
         transform: rotate(45deg);
+      }
+      .tip,
+      .flip {
+        font-family: "Josefin Sans", sans-serif;
+        border-radius: 50px;
+        border: 3px solid #b5ffb8;
+        background-color: #88ff8c;
+        position: absolute;
+        text-transform: uppercase;
+        color: #b5ffb8;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .tip {
+        padding: 21px 13px 14px;
+        left: 20px;
+        bottom: 20px;
+      }
+      .flip {
+        padding: 22px 8px 15px;
+        right: 20px;
+        bottom: 20px;
+      }
+
+      .tip:focus,
+      .flip:focus {
+        outline: none;
       }
 
       @media screen and (min-width: 666px) {
