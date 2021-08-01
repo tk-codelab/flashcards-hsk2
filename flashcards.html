@@ -277,15 +277,19 @@
                         var flashcardsAll = document.getElementById(
                             "flashcards"
                         );
-                        flashcardsAll.innerHTML = "";
+                        flashcardsAll.innerHTML = ""; // Remove all the cards
                         var listRandom10 = [];
-                        for (i = 0; i < 10; i++) {
-                            listRandom10.push(
-                                Math.floor(
-                                    Math.random() * HSK2Object.hsk2.length
-                                )
+                        // Make list of 10 random numbers
+                        while (listRandom10.length < 10) {
+                            var randomNumber = Math.floor(
+                                Math.random() * HSK2Object.hsk2.length
                             );
+                            // If the number is not yet in the array (doesn't have an index yet), push it into the array
+                            // Why? Otherwise you often get one card twice in a set of 10 and as a user you start to notice it.
+                            if (listRandom10.indexOf(randomNumber) === -1)
+                                listRandom10.push(randomNumber);
                         }
+                        // Actually add the cards now
                         for (i = 0; i < listRandom10.length; i++) {
                             addElement(language, listRandom10);
                             // First the Random Button had it's own function to generate cards. But I saw it was reusing a lot of the code off addElement(language). So I added the parameter optionalList to addElement().
