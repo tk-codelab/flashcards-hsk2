@@ -8,6 +8,10 @@ Copy path of flashcards.html and open in browser
 
 /xx/xx/xx/flashcards-version-1/flashcards.html
 
+# Related github repo
+
+https://github.com/tk-codelab/flashcards-hsk2/
+
 # TODO
 
 -   Remove the blue flickering when clicking on TIP on mobile
