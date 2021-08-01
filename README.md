@@ -24,12 +24,12 @@ https://github.com/tk-codelab/flashcards-hsk2/
 
 # Why make this project?
 
-Because I wanted to learn Chinese.
-Because I had to learn the HSK2 vocab if I wanted to pass the HSK2 exam.
-Because I found existing flashcards lacking, for example mnemonics, and ease of use.
-Because I love flashcards!
-Because I like actually flipping the cards.
-Because I wanted a pet project next to my work, to make someting in Vanilla Javascript.
+- Because I wanted to learn Chinese.
+- Because I had to learn the HSK2 vocab if I wanted to pass the HSK2 exam.
+- Because I found existing flashcards lacking, for example mnemonics, and ease of use.
+- Because I love flashcards!
+- Because I like actually flipping the cards.
+- Because I wanted a pet project next to my work, to make someting in Vanilla Javascript.
 
 # Why php files?
 
