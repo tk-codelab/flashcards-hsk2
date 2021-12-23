@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-GB">
 
 <head>
-    <!-- so that's why that's always in there! utf-8 otherwise no chinese characters -->
+    <title>Flashcards HSK2</title>
+    <!-- utf-8: otherwise no Chinese characters -->
     <meta charset="utf-8" />
-    <!-- aha my media queries won't work without width=device-width -->
+    <!-- Media queries won't work without width=device-width -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Google Font (that supports Chinese & Pinyin) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
-    <title>Flashcards HSK2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Noto+Sans+SC&display=swap"
+        rel="stylesheet">
+
 </head>
 
 <body>
@@ -61,11 +64,11 @@
             var front = document.createElement("div");
             var back = document.createElement("div");
             var flip = document.createElement("button");
-            var characterDiv = document.createElement("div");
-            var pinyinDiv = document.createElement("div");
-            var definitionDiv = document.createElement("div");
+            var characterDiv = document.createElement("p");
+            var pinyinDiv = document.createElement("p");
+            var definitionDiv = document.createElement("p");
             var soundDiv = document.createElement("div");
-            var mdbgDiv = document.createElement("div");
+            var mdbgDiv = document.createElement("p");
             if (HSK2Object.hsk2[index].mnemonic) {
                 // console.log('there is a mnemonic in ' + HSK2Object.hsk2[i].definition);
                 var tip = document.createElement("button");
@@ -84,7 +87,9 @@
             front.setAttribute("class", "front");
             back.setAttribute("class", "back");
             characterDiv.setAttribute("class", "character");
+            characterDiv.setAttribute("lang", "zh-Hans");
             pinyinDiv.setAttribute("class", "pinyin");
+            pinyinDiv.setAttribute("lang", "zh-Latn-pinyin");
             definitionDiv.setAttribute("class", "definition");
             soundDiv.setAttribute("class", "sound");
             mdbgDiv.setAttribute("class", "mdbg");
@@ -233,15 +238,33 @@
                 // Otherwise, show it
                 show(elem);
             };
-            var toggleActive = function (elem) {
+            var toggleActive = function (elem, delay = 0) {
                 // If the element has the class active, remove class active
                 if (elem.classList.contains("active")) {
-                    elem.classList.remove("active");
+
+                    // Remove class with a delay, if provided. (keeping 'active' class a bit longer. Related to animation.)
+                    if (delay) {
+                        setTimeout(function () {
+                            elem.classList.remove("active");
+                        }, delay);
+                        return
+                    } else { // Remove class immediately.
+                        elem.classList.remove("active");
+                        return;
+                    }
+                }
+                // Otherwise, add class active
+                elem.classList.add("active");
+            };
+            var flipAnimation = function (elem) {
+                // If the element has the class active, remove class active
+                if (elem.classList.contains("flipanimation")) {
+                    elem.classList.remove("flipanimation");
                     return;
                 }
 
                 // Otherwise, add class active
-                elem.classList.add("active");
+                elem.classList.add("flipanimation");
             };
             document.addEventListener("click", function (event) {
                 if (!event.target.classList.contains("sound")) {
@@ -379,7 +402,8 @@
                         return;
                     }
                     currentCard = event.target.closest(".flashcard");
-                    toggleActive(currentCard);
+                    flipAnimation(currentCard);
+                    toggleActive(currentCard, 600);
                 },
                 false
             );
@@ -423,6 +447,17 @@
         });
     </script>
     <style>
+        :root {
+            --font-one: 'Noto Sans SC', sans-serif;
+            --font-two: 'Josefin Sans', sans-serif;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
         body,
         p,
         div,
@@ -430,6 +465,7 @@
         ul,
         li {
             box-sizing: border-box;
+            font-family: var(--font-two);
         }
 
         .intro {
@@ -459,14 +495,13 @@
             margin-top: 0;
             flex-grow: 0;
             flex-shrink: 1;
-            font-family: "Josefin Sans", sans-serif;
         }
 
         .button {
             cursor: pointer;
-            font-family: "Josefin Sans", sans-serif;
+            font-size: 15px;
             border: 3px solid #88ff8c;
-            padding: 5px 10px 3px;
+            padding: 6px 10px 3px;
             background-color: white;
             color: black;
             border-radius: 10px;
@@ -500,14 +535,17 @@
             align-items: center;
             flex-direction: column;
             position: relative;
+            perspective: 1000px;
+            /* Applies 3d effect on card flip */
         }
 
         .flashcard-inner {
             background-color: #88ff8c;
+            /* box-shadow: 0px 0px 5px #00ff00; */
             width: 100%;
             height: 100%;
             /* padding: 60px 40px; */
-            transition: transform 0.6s;
+            transition: transform 0.6s, background-color 0.15s;
             transform-style: preserve-3d;
             display: flex;
             flex-direction: column;
@@ -517,8 +555,18 @@
             cursor: pointer;
         }
 
-        .flashcard.active .flashcard-inner {
-            transform: rotateY(180deg);
+        .flashcard:hover .flashcard-inner {
+            /* background-color: #57ff5d; */
+            background-color: lightpink;
+        }
+
+        .flashcard.active {
+            z-index: 10;
+        }
+
+        .flashcard.flipanimation .flashcard-inner {
+            /* transform: rotateY(180deg); */
+            transform: rotate3d(0, 1, 0, 180deg);
         }
 
         .flashcard .front {
@@ -545,11 +593,11 @@
             padding-right: 40px;
         }
 
-        .flashcard.active .front {
+        .flashcard.flipanimation .front {
             visibility: hidden;
         }
 
-        .flashcard.active .back {
+        .flashcard.flipanimation .back {
             visibility: visible;
         }
 
@@ -565,17 +613,19 @@
         .character {
             font-size: 60px;
             flex-grow: 1;
+            margin: 0;
         }
 
         .pinyin {
             margin-top: 20px;
+            margin-bottom: 15px;
             font-size: 25px;
-            font-family: "Josefin Sans", sans-serif;
+            font-family: var(--font-one);
         }
 
         .definition {
             font-size: 25px;
-            font-family: "Josefin Sans", sans-serif;
+            margin: 0;
         }
 
         .sound {
@@ -589,12 +639,12 @@
 
         .mdbg {
             margin-top: 12px;
+
             /* visibility: hidden; */
         }
 
         .mdbg:before {
             content: "mdbg";
-            font-family: "Josefin Sans", sans-serif;
             font-weight: bold;
         }
 
@@ -675,10 +725,9 @@
 
         .tip,
         .flip {
-            font-family: "Josefin Sans", sans-serif;
             border-radius: 50px;
             border: 3px solid #b5ffb8;
-            background-color: #88ff8c;
+            background-color: transparent;
             position: absolute;
             text-transform: uppercase;
             color: #b5ffb8;
@@ -688,13 +737,13 @@
         }
 
         .tip {
-            padding: 21px 13px 14px;
+            padding: 17px 13px 12px;
             left: 20px;
             bottom: 20px;
         }
 
         .flip {
-            padding: 22px 8px 15px;
+            padding: 16px 6px 14px;
             right: 20px;
             bottom: 20px;
         }
