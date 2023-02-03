@@ -1,6 +1,6 @@
 # View the project
 
-http://flashcards-hsk2.herokuapp.com/
+https://flashcards-hsk2.onrender.com/
 
 # Why make this project?
 
@@ -32,16 +32,4 @@ https://github.com/tk-codelab/flashcards-hsk2/
 -   Add a way to tag a card as 'learned' so only the ones are left that you have to practice. Using cookies? Database seems too much. If database then Firebase.
 -   Use an actual text to speech API to generate the sound, instead of going to google translate and having to click the play button there https://cloud.google.com/text-to-speech/ or https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API#speech_synthesis. The latter seems promising, see https://mdn.github.io/web-speech-api/speak-easy-synthesis/
 
-# Why php files?
 
-To prepare to deploy with Heroku, I needed some PHP files. Why?
-
-"Heroku allows web-hosting, but what do you know? They do not host static websites with HTML, CSS, and JS."
-https://medium.com/@winnieliang/how-to-run-a-simple-html-css-javascript-application-on-heroku-4e664c541b0b
-
-That's why you need:
-
--   composer.json
--   index.php
-
-to trick it to think it's a PHP application.
